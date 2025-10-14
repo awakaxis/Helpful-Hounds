@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "net.awakaxis.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["WolfRendererMixin", "WolfRenderStateMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
