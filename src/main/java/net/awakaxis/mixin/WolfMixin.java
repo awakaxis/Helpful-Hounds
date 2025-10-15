@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -19,7 +20,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.UseRemainder;
 import net.minecraft.world.phys.AABB;
 
 @Mixin(Wolf.class)
@@ -78,6 +81,31 @@ public abstract class WolfMixin {
         Wolf self = (Wolf) (Object) this;
 
         if (self.level() instanceof ServerLevel serverLevel) {
+
+            ItemStack mouthItem = self.getItemBySlot(EquipmentSlot.MAINHAND);
+
+            // eat held food for healing
+            if (self.isFood(mouthItem) && self.getHealth() < self.getMaxHealth()
+                    && ((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.05f) {
+                UseRemainder useRemainder = mouthItem.get(DataComponents.USE_REMAINDER);
+
+                int i = mouthItem.getCount();
+                mouthItem.consume(1, self);
+                if (useRemainder != null) {
+                    mouthItem = useRemainder.convertIntoRemainder(mouthItem, i, self.hasInfiniteMaterials(),
+                            (itemStack) -> {
+                                helpfulhounds$dropItem(itemStack, false, false);
+                            });
+                }
+
+                FoodProperties foodProperties = (FoodProperties) mouthItem.get(DataComponents.FOOD);
+                float f = foodProperties != null ? (float) foodProperties.nutrition() : 1.0F;
+                self.heal(2.0F * f);
+                self.level().playSound(null, self.blockPosition(), SoundEvents.GENERIC_EAT.value(),
+                        SoundSource.NEUTRAL);
+                self.setItemSlot(EquipmentSlot.MAINHAND, mouthItem);
+            }
+
             AABB box = self.getBoundingBox().inflate(.5);
 
             List<Entity> entities = serverLevel.getEntities(self, box);
