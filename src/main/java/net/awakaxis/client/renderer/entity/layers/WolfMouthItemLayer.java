@@ -8,7 +8,6 @@ import org.joml.Matrix4f;
 
 import net.awakaxis.client.duck.WolfRenderStateDuck;
 import net.minecraft.client.model.WolfModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -30,9 +29,8 @@ public class WolfMouthItemLayer extends RenderLayer<WolfRenderState, WolfModel> 
         boolean bl = renderStateDuck.getMouthItem() == Items.BONE
                 || renderStateDuck.getMouthItem().components().getOrDefault(DataComponents.FOOD, null) != null;
         poseStack.pushPose();
-        ModelPart realHead = getParentModel().root().getChild("head").getChild("real_head");
         getParentModel().root().getChild("head").translateAndRotate(poseStack);
-        realHead.translateAndRotate(poseStack);
+        getParentModel().root().getChild("head").getChild("real_head").translateAndRotate(poseStack);
         Matrix4f affine = poseStack.last().pose();
         Matrix3f normal = poseStack.last().normal();
 
