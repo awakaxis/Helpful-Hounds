@@ -82,10 +82,16 @@ public abstract class WolfMixin {
 
             List<Entity> entities = serverLevel.getEntities(self, box);
 
+            // pick up any item on the ground nearby if MAINHAND empty or if dropped by
+            // owner
             for (Entity entity : entities) {
                 if (entity instanceof ItemEntity itemEntity && itemEntity.getOwner() != self
-                        && !itemEntity.hasPickUpDelay() && !entity.isRemoved()) {
-                    helpfulhounds$dropItem();
+                        && !itemEntity.hasPickUpDelay() && !entity.isRemoved()
+                        && (self.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty()
+                                || itemEntity.getOwner() == self.getOwner())) {
+                    if (self.hasItemInSlot(EquipmentSlot.MAINHAND)) {
+                        helpfulhounds$dropItem(self.getItemBySlot(EquipmentSlot.MAINHAND), true, true);
+                    }
 
                     self.onItemPickup(itemEntity);
                     self.setGuaranteedDrop(EquipmentSlot.MAINHAND);
