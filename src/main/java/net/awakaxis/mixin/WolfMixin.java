@@ -26,16 +26,20 @@ import net.minecraft.world.phys.AABB;
 public abstract class WolfMixin {
 
     @Unique
-    private void helpfulhounds$dropItem() {
+    private void helpfulhounds$dropItem(ItemStack dropItem, boolean clearMouth, boolean sound) {
         Wolf self = (Wolf) (Object) this;
-        ItemStack itemStack = self.getItemBySlot(EquipmentSlot.MAINHAND);
-        if (!itemStack.isEmpty()) {
-            self.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        if (!dropItem.isEmpty()) {
+            if (clearMouth) {
+                self.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+            }
             ItemEntity dropped = new ItemEntity(self.level(), self.getX() + self.getLookAngle().x,
-                    self.getY() + 1, self.getZ() + self.getLookAngle().z, itemStack);
+                    self.getY() + 1, self.getZ() + self.getLookAngle().z, dropItem);
             dropped.setDefaultPickUpDelay();
             dropped.setThrower(self);
-            self.playSound(SoundEvents.FOX_SPIT, .65f, .15f);
+            if (sound) {
+                self.level().playSound(null, self.blockPosition(), SoundEvents.FOX_SPIT, SoundSource.NEUTRAL, 0.55f,
+                        0.15f);
+            }
             self.level().addFreshEntity(dropped);
         }
     }
