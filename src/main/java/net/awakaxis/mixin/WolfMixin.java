@@ -44,19 +44,33 @@ public abstract class WolfMixin {
         }
     }
 
+    @Unique
     private void helpfulhounds$tryTakeItem(Player player) {
         Wolf self = (Wolf) (Object) this;
-        if (self.getOwner() != null && self.getOwner().equals(player)) {
-            if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() >= 0.1f) {
-                helpfulhounds$dropItem();
+        if (self.getOwner() == null) {
+            if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.8f) {
+                self.level().playSound(null, self.blockPosition(),
+                        ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
+                        SoundSource.NEUTRAL);
+                if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.33f) {
+                    self.setPersistentAngerTarget(player.getUUID());
+                    self.startPersistentAngerTimer();
+                }
                 return;
             }
-        }
-        if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() >= 0.8f) {
-            helpfulhounds$dropItem();
+        } else if (self.getOwner().equals(player)
+                && ((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.04f) {
+            self.level().playSound(null, self.blockPosition(),
+                    ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
+                    SoundSource.NEUTRAL);
+            return;
+        } else if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.45f) {
+            self.level().playSound(null, self.blockPosition(),
+                    ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
+                    SoundSource.NEUTRAL);
             return;
         }
-        self.playSound(((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value());
+        helpfulhounds$dropItem(self.getItemBySlot(EquipmentSlot.MAINHAND), true, true);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
