@@ -93,11 +93,16 @@ public abstract class WolfMixin {
                         helpfulhounds$dropItem(self.getItemBySlot(EquipmentSlot.MAINHAND), true, true);
                     }
 
+                    ItemStack itemStack = itemEntity.getItem().split(1);
+
                     self.onItemPickup(itemEntity);
                     self.setGuaranteedDrop(EquipmentSlot.MAINHAND);
-                    self.setItemSlot(EquipmentSlot.MAINHAND, itemEntity.getItem());
+                    self.setItemSlot(EquipmentSlot.MAINHAND, itemStack);
                     serverLevel.playSound(null, self.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.NEUTRAL);
-                    entity.discard();
+                    itemEntity.setThrower(null);
+                    if (itemEntity.getItem().isEmpty()) {
+                        itemEntity.discard();
+                    }
                     return;
                 }
             }
