@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import net.awakaxis.world.entity.ai.goal.CollectDroppedItemGoal;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +18,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -161,5 +163,13 @@ public abstract class WolfMixin {
             }
             cir.setReturnValue(InteractionResult.SUCCESS.withoutItem());
         }
+    }
+
+    @Inject(method = "registerGoals", at = @At("TAIL"))
+    private void helpfulhounds$registerGoals(CallbackInfo ci) {
+        Wolf self = (Wolf) (Object) this;
+        GoalSelector goalSelector = ((MobAccessor) self).helpfulhounds$getGoalSelector();
+
+        goalSelector.addGoal(5, new CollectDroppedItemGoal(self));
     }
 }
