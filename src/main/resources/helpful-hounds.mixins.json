@@ -2,7 +2,7 @@
   "required": true,
   "package": "net.awakaxis.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["WolfMixin", "EntityAccessor", "WolfAccessor"],
+  "mixins": ["WolfMixin", "EntityAccessor", "WolfAccessor", "MobAccessor"],
   "injectors": {
     "defaultRequire": 1
   },
