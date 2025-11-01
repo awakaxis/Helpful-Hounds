@@ -131,7 +131,7 @@ public abstract class WolfMixin {
                     if (itemEntity.getItem().isEmpty()) {
                         itemEntity.discard();
                     }
-                    return;
+                    break;
                 }
             }
         }
