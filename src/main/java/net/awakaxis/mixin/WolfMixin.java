@@ -62,7 +62,7 @@ public abstract class WolfMixin {
                 return;
             }
         } else if (self.getOwner().equals(player)
-                && ((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.04f) {
+                && ((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < .03) {
             self.level().playSound(null, self.blockPosition(),
                     ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
                     SoundSource.NEUTRAL);
