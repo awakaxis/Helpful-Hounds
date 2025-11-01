@@ -106,6 +106,13 @@ public abstract class WolfMixin {
                 self.setItemSlot(EquipmentSlot.MAINHAND, mouthItem);
             }
 
+            // wild wolfs drop non food items after a bit
+            if (self.getOwner() == null && !self.isFood(mouthItem)
+                    && ((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.0005f) {
+                helpfulhounds$dropItem(mouthItem, true, true);
+                mouthItem = ItemStack.EMPTY;
+            }
+
             AABB box = self.getBoundingBox().inflate(.5);
 
             List<Entity> entities = serverLevel.getEntities(self, box);
