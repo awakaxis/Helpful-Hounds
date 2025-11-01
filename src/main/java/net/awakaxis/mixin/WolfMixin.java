@@ -19,6 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +27,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.UseRemainder;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 @Mixin(Wolf.class)
 public abstract class WolfMixin {
@@ -68,11 +70,22 @@ public abstract class WolfMixin {
             self.level().playSound(null, self.blockPosition(),
                     ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
                     SoundSource.NEUTRAL);
+            // tamed wolfs have a 50/50 chance to run away when refusing to give their item
+            if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.5) {
+                Vec3 targetPos = DefaultRandomPos.getPosAway(self, 8, 7, self.getOwner().position());
+                self.getNavigation()
+                        .moveTo(self.getNavigation().createPath(targetPos.x(), targetPos.y(), targetPos.z(), 0), 1.25);
+            }
             return;
         } else if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.45f) {
             self.level().playSound(null, self.blockPosition(),
                     ((WolfAccessor) self).helpfulhounds$getSoundVariant().value().growlSound().value(),
                     SoundSource.NEUTRAL);
+            if (((EntityAccessor) self).helpfulhounds$getRandom().nextFloat() < 0.8) {
+                Vec3 targetPos = DefaultRandomPos.getPosAway(self, 8, 7, self.getOwner().position());
+                self.getNavigation()
+                        .moveTo(self.getNavigation().createPath(targetPos.x(), targetPos.y(), targetPos.z(), 0), 1.25);
+            }
             return;
         }
         helpfulhounds$dropItem(self.getItemBySlot(EquipmentSlot.MAINHAND), true, true);
