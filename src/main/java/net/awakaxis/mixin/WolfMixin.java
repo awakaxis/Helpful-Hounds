@@ -110,15 +110,21 @@ public abstract class WolfMixin {
 
             List<Entity> entities = serverLevel.getEntities(self, box);
 
-            // pick up any item on the ground nearby if MAINHAND empty or if dropped by
-            // owner
             for (Entity entity : entities) {
-                if (entity instanceof ItemEntity itemEntity && itemEntity.getOwner() != self
-                        && !itemEntity.hasPickUpDelay() && !entity.isRemoved()
-                        && (self.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty()
-                                || itemEntity.getOwner() == self.getOwner())) {
-                    if (self.hasItemInSlot(EquipmentSlot.MAINHAND)) {
-                        helpfulhounds$dropItem(self.getItemBySlot(EquipmentSlot.MAINHAND), true, true);
+                if (entity instanceof ItemEntity itemEntity) {
+                    if (itemEntity.hasPickUpDelay() || itemEntity.isRemoved() || itemEntity.getOwner() == self) {
+                        continue;
+                    }
+                    if (!mouthItem.isEmpty()) {
+                        // wild wolfs drop any non food item for food items
+                        if (self.getOwner() == null && !self.isFood(mouthItem) && self.isFood(itemEntity.getItem())) {
+                            helpfulhounds$dropItem(mouthItem, true, true);
+                        }
+                        // tamed wolfs drop any item for their owner's dropped item
+                        if (self.getOwner() != null && itemEntity.getOwner() == self.getOwner()) {
+                            helpfulhounds$dropItem(mouthItem, true, true);
+                        }
+                        continue;
                     }
 
                     ItemStack itemStack = itemEntity.getItem().split(1);
